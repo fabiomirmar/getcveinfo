@@ -1,12 +1,12 @@
 #!/bin/bash
 
-###### CHANGEME ######
+###### VARIABLES  ######
 # Inform date range
 dot1_date=$1
 dot2_date=$2
 # Inform release
 release=$3
-######################
+########################
 
 if [[ -z $dot1_date || -z $dot2_date || -z $release ]]; then
 	echo "Reading variables. Optionally run the command as ./getcveinfo.sh BEGIN_DATE END_DATE RELEASE"
@@ -26,7 +26,7 @@ dirname=$(echo "/tmp/tempdir-$append")
 mkdir $dirname
 
 # Download USN database
-wget https://people.canonical.com/~ubuntu-security/usn/database.json.bz2 -O $dirname/database.json.bz2
+wget -q https://people.canonical.com/~ubuntu-security/usn/database.json.bz2 -O $dirname/database.json.bz2
 bzip2 -d $dirname/database.json.bz2
 
 # Prepare filter
@@ -52,9 +52,9 @@ jq . $dirname/$release.json | jq -r .CVEs | grep CVE  | sort | uniq | cut -d \" 
 # Categorize the CVEs by Priority
 if [ -d /tmp/ubuntu-cve-tracker ]; then
 	cd /tmp/ubuntu-cve-tracker
-	git pull 
+	git pull -q
 else
-	git clone git+ssh://fabio.martins@git.launchpad.net/ubuntu-cve-tracker /tmp/ubuntu-cve-tracker
+	git clone -q git+ssh://fabio.martins@git.launchpad.net/ubuntu-cve-tracker /tmp/ubuntu-cve-tracker
 fi
 
 for cve in `cat $dirname/"$release"_cves`; do \
